@@ -3,6 +3,8 @@
 @import 'admin-lte/dist/css/adminlte.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
+@import 'summernote/dist/summernote-bs5.css';
+
 /* --- FontAwesome nếu dùng --- */
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 

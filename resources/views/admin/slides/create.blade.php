@@ -20,11 +20,14 @@
 
       <div class="mb-3">
         <label for="image" class="form-label">Ảnh slide</label>
-        <input type="file"
-         name="image"
-         id="image"
-         accept="image/*">
-        <div class="invalid-feedback">Vui lòng chọn ảnh.</div>
+        <input
+          type="file"
+          name="image"
+          class="filepond"
+          data-folder="slides"
+          accept="image/*"
+        >
+  <div class="invalid-feedback">Vui lòng chọn ảnh hợp lệ (JPEG/PNG, tối đa 2MB)</div>
       </div>
 
       <div class="form-check form-switch mb-3">

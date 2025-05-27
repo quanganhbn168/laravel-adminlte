@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Slide;
 use Illuminate\Http\Request;
+use App\Http\Requests\SlideRequest;
 use Illuminate\Support\Facades\Storage;
 
 class SlideController extends Controller
@@ -19,21 +20,11 @@ class SlideController extends Controller
         return view('admin.slides.create');
     }
 
-    public function store(Request $request)
+    public function store(SlideRequest $request)
     {
-        dd($request->all());
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'image' => 'required|image|max:2048',
-        ]);
-
-        $data['status'] = $request->boolean ? 1 : 0;
-
-        $data['image'] = $request->file('image')->store('slides', 'public');
-
-        Slide::create($data);
-
-        return redirect()->route('admin.slides.index')->with('success', 'Tạo slide thành công!');
+        Slide::create($request->validated());
+        return redirect()->route('admin.slides.index')
+                         ->with('success','Tạo slide thành công!');
     }
 
     public function edit(Slide $slide)
@@ -41,22 +32,17 @@ class SlideController extends Controller
         return view('admin.slides.edit', compact('slide'));
     }
 
-    public function update(Request $request, Slide $slide)
+    public function update(SlideRequest $request, Slide $slide)
     {
-        $data = $this->validateData($request, false);
+        $slide->fill($request->validated());
+        $slide->save();
 
-        if ($request->hasFile('image')) {
-            if ($slide->image && Storage::disk('public')->exists($slide->image)) {
-                Storage::disk('public')->delete($slide->image);
-            }
-            $data['image'] = $request->file('image')->store('slides', 'public');
-        }
-
-        $data['status'] = $request->has('status');
-        $slide->update($data);
-
-        return redirect()->route('admin.slides.index')->with('success', 'Cập nhật slide thành công.');
+        return redirect()
+            ->route('admin.slides.index')
+            ->with('success', 'Cập nhật slide thành công.');
     }
+
+
 
     public function destroy(Slide $slide)
     {
@@ -84,8 +70,12 @@ class SlideController extends Controller
     {
         return $request->validate([
             'title' => 'required|string|max:255',
-            'image' => $isCreate ? 'required|image|max:2048' : 'nullable|image|max:2048',
+        // Create bắt buộc, Update chỉ khi có thì phải là string
+            'image' => $isCreate
+            ? 'required|string'
+            : 'sometimes|string',
             'status' => 'nullable|boolean',
         ]);
     }
+
 }
